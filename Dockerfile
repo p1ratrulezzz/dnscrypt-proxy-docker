@@ -25,10 +25,10 @@ RUN mkdir -p /opt/dnscrypt-proxy \
     && cp /tmp/dnscrypt-proxy.toml /opt/dnscrypt-proxy/dnscrypt-proxy.toml
 
 
-FROM scratch
+FROM alpine:3.24.2
 
-#RUN addgroup -S dnscrypt && adduser -S -D -H -G dnscrypt dnscrypt \
-#    && apk add --no-cache ca-certificates
+RUN addgroup -S dnscrypt && adduser -S -D -H -G dnscrypt dnscrypt \
+    && apk add --no-cache ca-certificates
 
 #COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /opt/dnscrypt-proxy /opt/dnscrypt-proxy
