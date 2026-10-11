@@ -7,7 +7,7 @@ services:
       tags:
         - ghcr.io/p1ratrulezzz/dnscrypt-proxy:latest
     healthcheck:
-      test: ["CMD", "/dnscrypt-proxy", "-config", "/etc/dnscrypt-proxy/dnscrypt-proxy.toml", "-check"]
+      test: ["CMD", "/opt/dnscrypt-proxy/dnscrypt-proxy", "-config", "/opt/dnscrypt-proxy/dnscrypt-proxy.toml", "-check"]
       interval: 30s
       timeout: 3s
       retries: 3
