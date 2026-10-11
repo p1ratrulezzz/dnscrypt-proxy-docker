@@ -1,3 +1,8 @@
+FROM alpine:3.24 AS health
+RUN apk update && apk add --no-cache gcc musl-dev
+COPY healthcheck.c .
+RUN gcc -static -Os -s -o healthcheck healthcheck.c
+
 FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS build
 
 ARG VERSION=2.1.18
@@ -22,15 +27,21 @@ COPY ./dnscrypt-proxy.toml /tmp/dnscrypt-proxy.toml
 RUN mkdir -p /opt/dnscrypt-proxy \
 	&& cp /out/dnscrypt-proxy /opt/dnscrypt-proxy/dnscrypt-proxy \
     && chmod +x /opt/dnscrypt-proxy/dnscrypt-proxy \
-    && cp /tmp/dnscrypt-proxy.toml /opt/dnscrypt-proxy/dnscrypt-proxy.toml
+    && cp /tmp/dnscrypt-proxy.toml /opt/dnscrypt-proxy/dnscrypt-proxy.toml \
+    && mkdir -p /var/cache/dnscrypt-proxy \
+    && touch /var/cache/dnscrypt-proxy/public-resolvers.md
 
 
 FROM scratch
 
 #RUN addgroup -S dnscrypt && adduser -S -D -H -G dnscrypt dnscrypt
 
+COPY --from=health /healthcheck /healthcheck
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /opt/dnscrypt-proxy /opt/dnscrypt-proxy
+COPY --from=build /var/cache/dnscrypt-proxy/public-resolvers.md /var/cache/dnscrypt-proxy/public-resolvers.md
+
+VOLUME ["/var/cache/dnscrypt-proxy"]
 
 EXPOSE 53/tcp 53/udp
 

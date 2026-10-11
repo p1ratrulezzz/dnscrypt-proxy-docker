@@ -6,11 +6,11 @@ services:
       dockerfile: Dockerfile
       tags:
         - ghcr.io/p1ratrulezzz/dnscrypt-proxy:latest
-#    healthcheck:
-#      test: ["CMD", "/opt/dnscrypt-proxy/dnscrypt-proxy", "-config", "/opt/dnscrypt-proxy/dnscrypt-proxy.toml", "-check"]
-#      interval: 30s
-#      timeout: 3s
-#      retries: 3
+    healthcheck:
+      test: ["CMD", "/healthcheck"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     ports:
       - '127.0.0.1:53333:53/udp'
     #command:
